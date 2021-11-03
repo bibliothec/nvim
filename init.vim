@@ -26,5 +26,5 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'https://github.com/jiangmiao/auto-pairs'
     Plug 'https://github.com/terryma/vim-expand-region'
     Plug 'https://github.com/mattn/vim-sonictemplate'
-    Plug 'https://github.com/tomasr/molokai' 
+    Plug 'https://github.com/tomasr/molokai',{'do':'cp colors/* ~/.config/nvim/colora'} 
 call plug#end() 
