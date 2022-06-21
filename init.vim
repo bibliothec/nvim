@@ -16,7 +16,7 @@ inoremap <silent> jj <ESC>
 set backspace=indent,eol,start
 cmap w!! w !sudo tee > /dev/null %
 hi Visual ctermbg=240 guibg=#979dba 
-hi Comment ctermfg=darkgray
+hi Comment ctermfg=102
 
 call plug#begin('~/.config/nvim/plugged')
     Plug 'https://github.com/vim-airline/vim-airline'
