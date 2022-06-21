@@ -15,6 +15,8 @@ nnoremap <silent><C-e> :NERDTreeToggle<CR>
 inoremap <silent> jj <ESC>
 set backspace=indent,eol,start
 cmap w!! w !sudo tee > /dev/null %
+hi Visual ctermbg=240 guibg=#979dba 
+hi Comment ctermfg=darkgray
 
 call plug#begin('~/.config/nvim/plugged')
     Plug 'https://github.com/vim-airline/vim-airline'
@@ -26,6 +28,8 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'https://github.com/jiangmiao/auto-pairs'
     Plug 'https://github.com/terryma/vim-expand-region'
     Plug 'https://github.com/mattn/vim-sonictemplate'
+    Plug 'https://github.com/Shougo/ddc.vim'
+    Plug 'https://github.com/mattn/emmet-vim'
     Plug 'https://github.com/tpope/vim-commentary'
     Plug 'neoclide/coc.nvim', {'branch': 'release'}
     Plug 'https://github.com/tomasr/molokai',{'do':'cp colors/* ~/.config/nvim/colora'} 
