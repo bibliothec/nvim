@@ -16,6 +16,7 @@ set history=1000
 set wrapscan "最後尾まで検索を終えたら次の検索で先頭に移る
 set gdefault "置換の時 g オプションをデフォルトで有効にする
 let loaded_matchparen = 1 "括弧ハイライト削除
+nnoremap <ESC><ESC> :nohlsearch<CR>
 inoremap <C-h> <Left>
 inoremap <C-j> <Down>
 inoremap <C-k> <Up>
