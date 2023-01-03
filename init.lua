@@ -141,10 +141,12 @@ vim.api.nvim_create_autocmd({ "BufReadPost" }, {
  ]]
 
 require("packer").startup(function(use)
+    -- powerline
     use {
         'nvim-lualine/lualine.nvim',
         requires = { 'kyazdani42/nvim-web-devicons', opt = true }
     }
+    -- カッコの補完
     use {
         "windwp/nvim-autopairs",
         config = function() require("nvim-autopairs").setup {} end
@@ -156,6 +158,7 @@ require("packer").startup(function(use)
       'nvim-telescope/telescope.nvim', tag = '0.1.0',
       requires = { {'nvim-lua/plenary.nvim'} }
     }
+    use { "nvim-telescope/telescope-file-browser.nvim" }
     use {
       'stevearc/aerial.nvim',
       config = function() require('aerial').setup() end
@@ -210,6 +213,7 @@ end)
 -- plugin setup
 -- lualine setup
 require('evil_lualine')
+require("telescope").load_extension "file_browser"
 -- lsp setup
 require("mason").setup()
 require("mason-lspconfig").setup()
