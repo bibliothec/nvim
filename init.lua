@@ -177,10 +177,15 @@ require("packer").startup(function(use)
         requires = { 'kyazdani42/nvim-web-devicons' }
     }
     use { "nvim-telescope/telescope-file-browser.nvim" }
+    -- overview
     use {
         'stevearc/aerial.nvim',
         config = function() require('aerial').setup() end
     }
+    -- シンボル一覧表示
+    use 'simrat39/symbols-outline.nvim'
+    -- hilight
+    use 'nvim-treesitter/nvim-treesitter'
     -- window decoration
     use({
         "glepnir/lspsaga.nvim",
@@ -251,6 +256,19 @@ require("telescope").load_extension "file_browser"
 -- bufferline setup
 vim.opt.termguicolors = true
 require("bufferline").setup{}
+-- symbol-outline setup
+require("symbols-outline").setup()
+-- aerial setup
+require('aerial').setup({
+  -- optionally use on_attach to set keymaps when aerial has attached to a buffer
+  on_attach = function(bufnr)
+    -- Jump forwards/backwards with '{' and '}'
+    vim.keymap.set('n', '{', '<cmd>AerialPrev<CR>', {buffer = bufnr})
+    vim.keymap.set('n', '}', '<cmd>AerialNext<CR>', {buffer = bufnr})
+  end
+})
+-- You probably also want to set a keymap to toggle aerial
+vim.keymap.set('n', '<leader>a', '<cmd>AerialToggle!<CR>')
 -- gitsigns setup
 require('gitsigns').setup {
   signs = {
@@ -313,35 +331,70 @@ require("scrollbar").setup({
 -- lsp setup
 require("mason").setup()
 require("mason-lspconfig").setup()
-require("lspconfig").clangd.setup {}
+-- for C/C++
+-- require("lspconfig").clangd.setup {}
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities.offsetEncoding = 'utf-8'
+require('lspconfig').clangd.setup{
+        capabilities = capabilities
+}
+-- for rust
 require("lspconfig").rust_analyzer.setup {}
+-- for c#
 require("lspconfig").omnisharp.setup {}
-require("lspconfig").gopls.setup {}
-require("lspconfig").cmake.setup {}
-require("lspconfig").kotlin_language_server.setup {}
-require("lspconfig").pyright.setup {}
-require("lspconfig").arduino_language_server.setup {}
-require("lspconfig").bashls.setup {}
-require'lspconfig'.tsserver.setup{}
-require("lspconfig").r_language_server.setup {}
-require("lspconfig").vimls.setup {}
-require("lspconfig").vuels.setup {}
-require("lspconfig").powershell_es.setup {}
-require("lspconfig").dartls.setup {}
-require("lspconfig").denols.setup {}
-require("lspconfig").gdscript.setup {}
-require("lspconfig").dockerls.setup {}
-require("lspconfig").html.setup {}
-require("lspconfig").intelephense.setup {}
-require("lspconfig").texlab.setup {}
-require("lspconfig").jdtls.setup {}
-require("lspconfig").perlnavigator.setup {}
-require("lspconfig").solargraph.setup {}
-require("lspconfig").zls.setup {}
+require("lspconfig").csharp_ls.setup {}
+-- for D
 require("lspconfig").serve_d.setup {}
--- require("lspconfig")..setup {}
--- require("lspconfig")..setup {}
--- require("lspconfig")..setup {}
+-- for go
+require("lspconfig").gopls.setup {}
+-- for Cmake
+require("lspconfig").cmake.setup {}
+-- for kotlin
+require("lspconfig").kotlin_language_server.setup {}
+-- for python
+require("lspconfig").pyright.setup {}
+-- for arduino
+require("lspconfig").arduino_language_server.setup {}
+-- for bash
+require("lspconfig").bashls.setup {}
+-- for javascript/typescript
+require'lspconfig'.tsserver.setup{}
+-- for R
+require("lspconfig").r_language_server.setup {}
+-- for vimscript
+require("lspconfig").vimls.setup {}
+-- for vue
+require("lspconfig").vuels.setup {}
+-- for Powershell
+require("lspconfig").powershell_es.setup {}
+-- for dart
+require("lspconfig").dartls.setup {}
+-- for deno
+require("lspconfig").denols.setup {}
+-- for gdscript
+require("lspconfig").gdscript.setup {}
+-- for dockrfile
+require("lspconfig").dockerls.setup {}
+-- for html
+require("lspconfig").html.setup {}
+-- for PHP
+require("lspconfig").intelephense.setup {}
+-- fot tex
+require("lspconfig").texlab.setup {}
+-- for Java need later jdk
+require("lspconfig").jdtls.setup {}
+-- perl
+require("lspconfig").perlnavigator.setup {}
+-- ruby
+require("lspconfig").solargraph.setup {}
+-- for zig
+require("lspconfig").zls.setup {}
+-- for lua
+require("lspconfig").sumneko_lua.setup {}
+-- for tailwindcss
+require("lspconfig").tailwindcss.setup {}
+-- for css
+require("lspconfig").cssls.setup {}
 -- require("lspconfig")..setup {}
 -- require("lspconfig")..setup {}
 -- require("lspconfig")..setup {}
@@ -435,3 +488,4 @@ null_ls.setup({
       { name = 'cmdline' }
     })
   })
+
