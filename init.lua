@@ -38,10 +38,8 @@ vim.opt.wrapscan = true
 -- カーソル移動
 -- - 行を跨いでの移動
  vim.opt.whichwrap = 'b', 's', 'h', 'l', '<', '>', '[', ']'
-
 -- - 削除時の対象(windows)(バグる)
 -- vim.opt.backspace = 'start', 'eol', 'indent'
-
 -- ファイル環境
 -- -フォーマット
 vim.opt.fileformats =  'unix', 'dos', 'mac'
@@ -66,7 +64,7 @@ vim.opt.backupdir = os.getenv("HOME") .. '/.vim/backup'
 vim.opt.winblend = 20
 vim.opt.pumblend = 20
 vim.opt.termguicolors = true
-
+-- 画面を超えたら行を折り返すかどうか
 vim.opt.wrap = false
 vim.opt.nrformats = "bin,hex"
 -- スワップファイルなし
@@ -105,9 +103,21 @@ vim.keymap.set('i', 'jj', '<ESC>')
 vim.keymap.set('i', '<C-c>', '<ESC>')
 -- xで削除した時にコピーしない
 vim.keymap.set('n', 'x', '"_x')
+-- dwで削除した時にコピーしない
+vim.keymap.set("n", "dw", '"_dw', opts)
+-- ;でコマンド入力( ;と:を入れ替)
+-- vim.keymap.set("n", ";", ":", opts)
+-- 行末までのヤンクにする
+vim.keymap.set("n", "Y", "y$", opts)
+-- コンマの後に自動的にスペースを挿入
+vim.keymap.set("i", ",", ",<Space>", opts)
+-- Select all
+vim.keymap.set("n", "<C-a>", "gg<S-v>G", opts)
 -- shift+hlで飛ばして移動
-vim.keymap.set('n', '<S-h>', '^')
-vim.keymap.set('n', '<S-l>', '$')
+vim.keymap.set('n', '<Space>h', '^')
+vim.keymap.set('n', '<Space>l', '$')
+-- ターミナルモードでESC無効
+vim.keymap.set('t', 'ESC', '')
 -- カラースキーム(colorsのところに置いておく)
 vim.cmd 'colorscheme alduin'
 
@@ -115,9 +125,9 @@ vim.cmd 'colorscheme alduin'
    pattern = '*',
    command = 'startinsert',
  })
+
 -- eqaul to below setting
 vim.cmd 'autocmd TermOpen * startinsert'
-
 
 -- ファイルを開いた時に、カーソルの場所を復元する
 vim.api.nvim_create_autocmd({ "BufReadPost" }, {
@@ -151,31 +161,49 @@ require("packer").startup(function(use)
         "windwp/nvim-autopairs",
         config = function() require("nvim-autopairs").setup {} end
     }
+    -- icons
+    use 'kyazdani42/nvim-web-devicons'
+    -- terminal
     use {"akinsho/toggleterm.nvim", tag = '*', config = function()
         require("toggleterm").setup()
     end}
+    -- filemanager
     use {
-      'nvim-telescope/telescope.nvim', tag = '0.1.0',
-      requires = { {'nvim-lua/plenary.nvim'} }
-    }
-    use { "nvim-telescope/telescope-file-browser.nvim" }
-    use {
-      'stevearc/aerial.nvim',
-      config = function() require('aerial').setup() end
+        'nvim-telescope/telescope.nvim', tag = '0.1.0',
+        requires = { {'nvim-lua/plenary.nvim'} }
     }
     use { 'ibhagwan/fzf-lua',
     -- optional for icon support
-    requires = { 'kyazdani42/nvim-web-devicons' }
+        requires = { 'kyazdani42/nvim-web-devicons' }
     }
+    use { "nvim-telescope/telescope-file-browser.nvim" }
+    use {
+        'stevearc/aerial.nvim',
+        config = function() require('aerial').setup() end
+    }
+    -- window decoration
+    use({
+        "glepnir/lspsaga.nvim",
+        branch = "main",
+        config = function()
+        local saga = require("lspsaga")
+
+        saga.init_lsp_saga({
+            -- your configuration
+        })
+        end,
+    })
     -- plugin manager
     use("wbthomason/packer.nvim")
     -- scrollbar
     use("petertriho/nvim-scrollbar")
+    -- tab manager 
+    use {'akinsho/bufferline.nvim', tag = "v3.*", requires = 'nvim-tree/nvim-web-devicons'}
     -- LSP
     use {
-    "williamboman/mason.nvim",
-    "williamboman/mason-lspconfig.nvim",
-    "neovim/nvim-lspconfig",
+        "williamboman/mason.nvim",
+        "williamboman/mason-lspconfig.nvim",
+        "neovim/nvim-lspconfig",
     }
     -- DAP (Debug Adapter Protocol)
     use 'mfussenegger/nvim-dap'
@@ -193,7 +221,11 @@ require("packer").startup(function(use)
     use 'ellisonleao/glow.nvim'
     -- emmet
     use 'mattn/emmet-vim'
-
+    -- git
+    use {
+        'lewis6991/gitsigns.nvim',
+      -- tag = 'release' -- To use the latest release (do not use this if you run Neovim nightly or dev builds!)
+    }
     use("jparise/vim-graphql")
     use("terrortylor/nvim-comment")
     use("bronson/vim-visual-star-search")
@@ -205,6 +237,7 @@ require("packer").startup(function(use)
     use("hrsh7th/cmp-buffer")
     use("hrsh7th/cmp-cmdline")
     use("hrsh7th/cmp-nvim-lsp")
+    use("hrsh7th/vim-vsnip")
     use("tpope/vim-surround")
     use("dcampos/nvim-snippy")
     use("dcampos/cmp-snippy")
@@ -213,7 +246,70 @@ end)
 -- plugin setup
 -- lualine setup
 require('evil_lualine')
+-- telescope filebrowser add 
 require("telescope").load_extension "file_browser"
+-- bufferline setup
+vim.opt.termguicolors = true
+require("bufferline").setup{}
+-- gitsigns setup
+require('gitsigns').setup {
+  signs = {
+    add          = { hl = 'GitSignsAdd'   , text = '│', numhl='GitSignsAddNr'   , linehl='GitSignsAddLn'    },
+    change       = { hl = 'GitSignsChange', text = '│', numhl='GitSignsChangeNr', linehl='GitSignsChangeLn' },
+    delete       = { hl = 'GitSignsDelete', text = '_', numhl='GitSignsDeleteNr', linehl='GitSignsDeleteLn' },
+    topdelete    = { hl = 'GitSignsDelete', text = '‾', numhl='GitSignsDeleteNr', linehl='GitSignsDeleteLn' },
+    changedelete = { hl = 'GitSignsChange', text = '~', numhl='GitSignsChangeNr', linehl='GitSignsChangeLn' },
+    untracked    = { hl = 'GitSignsAdd'   , text = '┆', numhl='GitSignsAddNr'   , linehl='GitSignsAddLn'    },
+  },
+  signcolumn = true,  -- Toggle with `:Gitsigns toggle_signs`
+  numhl      = false, -- Toggle with `:Gitsigns toggle_numhl`
+  linehl     = false, -- Toggle with `:Gitsigns toggle_linehl`
+  word_diff  = false, -- Toggle with `:Gitsigns toggle_word_diff`
+  watch_gitdir = {
+    interval = 1000,
+    follow_files = true
+  },
+  attach_to_untracked = true,
+  current_line_blame = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
+  current_line_blame_opts = {
+    virt_text = true,
+    virt_text_pos = 'eol', -- 'eol' | 'overlay' | 'right_align'
+    delay = 1000,
+    ignore_whitespace = false,
+  },
+  current_line_blame_formatter = '<author>, <author_time:%Y-%m-%d> - <summary>',
+  sign_priority = 6,
+  update_debounce = 100,
+  status_formatter = nil, -- Use default
+  max_file_length = 40000, -- Disable if file is longer than this (in lines)
+  preview_config = {
+    -- Options passed to nvim_open_win
+    border = 'single',
+    style = 'minimal',
+    relative = 'cursor',
+    row = 0,
+    col = 1
+  },
+  yadm = {
+    enable = false
+  },
+}
+-- nvim scrollbars setup
+local colors = require("tokyonight.colors").setup()
+require("scrollbar").setup({
+    handle = {
+        color = colors.bg_highlight,
+    },
+    marks = {
+        Search = { color = colors.orange },
+        Error = { color = colors.error },
+        Warn = { color = colors.warning },
+        Info = { color = colors.info },
+        Hint = { color = colors.hint },
+        Misc = { color = colors.purple },
+    }
+})
+
 -- lsp setup
 require("mason").setup()
 require("mason-lspconfig").setup()
@@ -269,7 +365,7 @@ vim.keymap.set('n', 'ge', '<cmd>lua vim.diagnostic.open_float()<CR>')
 vim.keymap.set('n', 'g]', '<cmd>lua vim.diagnostic.goto_next()<CR>')
 vim.keymap.set('n', 'g[', '<cmd>lua vim.diagnostic.goto_prev()<CR>')
 
-
+-- null-ls
 local null_ls = require("null-ls")
 null_ls.setup({
     sources = {
@@ -279,3 +375,63 @@ null_ls.setup({
     },
 })
 
+
+-- nvim-cmp setup
+  local cmp = require'cmp'
+  cmp.setup({
+    snippet = {
+      -- REQUIRED - you must specify a snippet engine
+      expand = function(args)
+        vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
+        -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+        -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
+        -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
+      end,
+    },
+    window = {
+      -- completion = cmp.config.window.bordered(),
+      -- documentation = cmp.config.window.bordered(),
+    },
+    mapping = cmp.mapping.preset.insert({
+      ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+      ['<C-f>'] = cmp.mapping.scroll_docs(4),
+      ['<C-Space>'] = cmp.mapping.complete(),
+      ['<C-e>'] = cmp.mapping.abort(),
+      ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+    }),
+    sources = cmp.config.sources({
+      { name = 'nvim_lsp' },
+      { name = 'vsnip' }, -- For vsnip users.
+      -- { name = 'luasnip' }, -- For luasnip users.
+      -- { name = 'ultisnips' }, -- For ultisnips users.
+      -- { name = 'snippy' }, -- For snippy users.
+    }, {
+      { name = 'buffer' },
+    })
+  })
+-- Set configuration for specific filetype.
+  cmp.setup.filetype('gitcommit', {
+    sources = cmp.config.sources({
+      { name = 'cmp_git' }, -- You can specify the `cmp_git` source if you were installed it.
+    }, {
+      { name = 'buffer' },
+    })
+  })
+
+  -- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
+  cmp.setup.cmdline({ '/', '?' }, {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = {
+      { name = 'buffer' }
+    }
+  })
+
+  -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+  cmp.setup.cmdline(':', {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = cmp.config.sources({
+      { name = 'path' }
+    }, {
+      { name = 'cmdline' }
+    })
+  })
