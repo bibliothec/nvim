@@ -1,47 +1,47 @@
 -- clipboad on
 vim.opt.clipboard = "unnamedplus"
 -- 表示
--- -番号表示
+-- 番号表示
 vim.opt.number = true
 -- タイトルの表示
 vim.opt.title = true
--- -特殊文字表示
+-- 特殊文字表示
 vim.opt.list = true
 vim.opt.listchars = {tab='>-', trail='*', nbsp='+'}
--- -エラー時の音を画面表示に
+-- エラー時の音を画面表示に
 vim.opt.visualbell = true
--- -括弧の連携
+-- 括弧の連携
 vim.opt.showmatch = true
 vim.opt.matchtime = 1
--- -ヘルプファイル
+-- ヘルプファイル
 vim.opt.helplang = 'ja', 'en'
--- -tabバーの表示
+-- tabバーの表示
 vim.opt.showtabline = 2
 -- 入力時
 vim.opt.encoding = "utf-8"
--- -インデントをC言語風に
+-- インデントをC言語風に
 vim.opt.autoindent = true
 vim.opt.smartindent = true
--- -タブ文字
+-- タブ文字
 vim.opt.expandtab = true
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 -- カーソルラインをハイライト
 vim.opt.cursorline = true
 -- 検索
--- -大文字無視
+-- 大文字無視
 vim.opt.ignorecase = true
--- -大文字で検索したら区別をつける
+-- 大文字で検索したら区別をつける
 vim.opt.smartcase = true
--- -検索が末尾までいったら先頭から検索
+-- 検索が末尾までいったら先頭から検索
 vim.opt.wrapscan = true
 -- カーソル移動
--- - 行を跨いでの移動
+--  行を跨いでの移動
  vim.opt.whichwrap = 'b', 's', 'h', 'l', '<', '>', '[', ']'
--- - 削除時の対象(windows)(バグる)
+-- 削除時の対象(windows)(バグる)
 -- vim.opt.backspace = 'start', 'eol', 'indent'
 -- ファイル環境
--- -フォーマット
+-- フォーマット
 vim.opt.fileformats =  'unix', 'dos', 'mac'
 -- マウス有効
 vim.opt.mouse = 'a'
@@ -61,9 +61,9 @@ vim.opt.backup = false
 -- backupファイルの場所
 vim.opt.backupdir = os.getenv("HOME") .. '/.vim/backup'
 -- 後ろの文字を透過してくれる
-vim.opt.winblend = 20
-vim.opt.pumblend = 20
-vim.opt.termguicolors = true
+-- vim.opt.winblend = 20
+-- vim.opt.pumblend = 20
+-- vim.opt.termguicolors = true
 -- 画面を超えたら行を折り返すかどうか
 vim.opt.wrap = false
 vim.opt.nrformats = "bin,hex"
@@ -112,12 +112,12 @@ vim.keymap.set("n", "Y", "y$", opts)
 -- コンマの後に自動的にスペースを挿入
 vim.keymap.set("i", ",", ",<Space>", opts)
 -- Select all
-vim.keymap.set("n", "<C-a>", "gg<S-v>G", opts)
+vim.keymap.set("n", "<C-h>", "gg<S-v>G", opts)
 -- shift+hlで飛ばして移動
 vim.keymap.set('n', '<Space>h', '^')
 vim.keymap.set('n', '<Space>l', '$')
 -- ターミナルモードでESC無効
-vim.keymap.set('t', 'ESC', '')
+-- vim.keymap.set('t', 'ESC', '')
 -- カラースキーム(colorsのところに置いておく)
 vim.cmd 'colorscheme alduin'
 
@@ -149,6 +149,8 @@ vim.api.nvim_create_autocmd({ "BufReadPost" }, {
    augroup END
  endif
  ]]
+
+require('plugins')
 
 require("packer").startup(function(use)
     -- powerline
@@ -186,16 +188,28 @@ require("packer").startup(function(use)
     use 'simrat39/symbols-outline.nvim'
     -- hilight
     use 'nvim-treesitter/nvim-treesitter'
+    -- filetree
+    vim.cmd([[ let g:neo_tree_remove_legacy_commands = 1 ]])
+    use {
+      "nvim-neo-tree/neo-tree.nvim",
+        branch = "v2.x",
+        requires = { 
+          "nvim-lua/plenary.nvim",
+          "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
+          "MunifTanjim/nui.nvim",
+        }
+      }
     -- window decoration
     use({
         "glepnir/lspsaga.nvim",
         branch = "main",
         config = function()
         local saga = require("lspsaga")
-
+        --[[
         saga.init_lsp_saga({
             -- your configuration
         })
+        ]]
         end,
     })
     -- plugin manager
@@ -244,8 +258,9 @@ require("packer").startup(function(use)
     use("hrsh7th/cmp-nvim-lsp")
     use("hrsh7th/vim-vsnip")
     use("tpope/vim-surround")
-    use("dcampos/nvim-snippy")
-    use("dcampos/cmp-snippy")
+    -- use("dcampos/nvim-snippy")
+    use({"L3MON4D3/LuaSnip"})
+    -- use("dcampos/cmp-snippy")
 end)
 
 -- plugin setup
@@ -258,6 +273,8 @@ vim.opt.termguicolors = true
 require("bufferline").setup{}
 -- symbol-outline setup
 require("symbols-outline").setup()
+-- luasnipet
+require("luasnip.loaders.from_vscode").lazy_load()
 -- aerial setup
 require('aerial').setup({
   -- optionally use on_attach to set keymaps when aerial has attached to a buffer
@@ -389,8 +406,6 @@ require("lspconfig").perlnavigator.setup {}
 require("lspconfig").solargraph.setup {}
 -- for zig
 require("lspconfig").zls.setup {}
--- for lua
-require("lspconfig").sumneko_lua.setup {}
 -- for tailwindcss
 require("lspconfig").tailwindcss.setup {}
 -- for css
@@ -399,6 +414,7 @@ require("lspconfig").cssls.setup {}
 -- require("lspconfig")..setup {}
 -- require("lspconfig")..setup {}
 
+-- lspのキーマップ
 -- 型情報
 vim.keymap.set('n', 'K',  '<cmd>lua vim.lsp.buf.hover()<CR>')
 -- format
@@ -409,7 +425,7 @@ vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>')
 vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>')
 vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>')
 vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>')
-vim.keymap.set('n', 'gt', '<cmd>lua vim.lsp.buf.type_definition()<CR>')
+-- vim.keymap.set('n', 'gt', '<cmd>lua vim.lsp.buf.type_definition()<CR>')
 -- 変数名のリネーム
 vim.keymap.set('n', 'gn', '<cmd>lua vim.lsp.buf.rename()<CR>')
 -- Error/Warning/Hintが出ている箇所で実行可能な修正の候補を表示
@@ -417,6 +433,15 @@ vim.keymap.set('n', 'ga', '<cmd>lua vim.lsp.buf.code_action()<CR>')
 vim.keymap.set('n', 'ge', '<cmd>lua vim.diagnostic.open_float()<CR>')
 vim.keymap.set('n', 'g]', '<cmd>lua vim.diagnostic.goto_next()<CR>')
 vim.keymap.set('n', 'g[', '<cmd>lua vim.diagnostic.goto_prev()<CR>')
+
+-- toggletermのキーマップ
+vim.keymap.set('n', '<C-t>', '<cmd>ToggleTerm<CR>', {buffer = bufnr})
+vim.keymap.set('i', '<C-t>', '<cmd>ToggleTerm<CR>', {buffer = bufnr})
+vim.keymap.set('t', '<C-t>', '<cmd>exit<CR>', {buffer = bufnr})
+
+-- telescopeのキーマップ
+vim.keymap.set('n', 'ff', '<cmd>Telescope file_browser<CR>', {buffer = bufnr})
+
 
 -- null-ls
 local null_ls = require("null-ls")
@@ -436,7 +461,7 @@ null_ls.setup({
       -- REQUIRED - you must specify a snippet engine
       expand = function(args)
         vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
-        -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+        require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
         -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
         -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
       end,
@@ -450,12 +475,12 @@ null_ls.setup({
       ['<C-f>'] = cmp.mapping.scroll_docs(4),
       ['<C-Space>'] = cmp.mapping.complete(),
       ['<C-e>'] = cmp.mapping.abort(),
-      ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+      ['<CR>'] = cmp.mapping.confirm({ select = false }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
     }),
     sources = cmp.config.sources({
       { name = 'nvim_lsp' },
       { name = 'vsnip' }, -- For vsnip users.
-      -- { name = 'luasnip' }, -- For luasnip users.
+      { name = 'luasnip' }, -- For luasnip users.
       -- { name = 'ultisnips' }, -- For ultisnips users.
       -- { name = 'snippy' }, -- For snippy users.
     }, {
@@ -488,4 +513,7 @@ null_ls.setup({
       { name = 'cmdline' }
     })
   })
+
+
+
 
