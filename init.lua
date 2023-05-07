@@ -59,7 +59,7 @@ vim.opt.hidden = true
 -- backupファイルを作成するか
 vim.opt.backup = false
 -- backupファイルの場所
-vim.opt.backupdir = os.getenv("HOME") .. '/.vim/backup'
+--vim.opt.backupdir = os.getenv("HOME") .. '/.vim/backup'
 -- 後ろの文字を透過してくれる
 -- vim.opt.winblend = 20
 -- vim.opt.pumblend = 20
