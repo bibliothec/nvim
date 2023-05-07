@@ -150,7 +150,7 @@ vim.api.nvim_create_autocmd({ "BufReadPost" }, {
  endif
  ]]
 
---require('plugins')
+require("plugins")
 
 require("packer").startup(function(use)
     -- powerline
