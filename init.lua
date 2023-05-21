@@ -17,8 +17,16 @@ vim.opt.matchtime = 1
 vim.opt.helplang = 'ja', 'en'
 -- tabバーの表示
 vim.opt.showtabline = 2
--- 入力時
+-- 文字コードの設定
 vim.opt.encoding = "utf-8"
+-- 保存時の文字コード
+vim.opt.fileencoding = "utf-8"
+-- 読み込み時の文字コードの自動判別
+vim.opt.fileencodings = "ucs-boms,utf-8,euc-jp,cp932"
+-- 改行コードの自動判別
+vim.opt.fileformats = "unix,dos,mac"
+-- □や○文字が崩れる問題を解決
+vim.opt.ambiwidth = "double"
 -- インデントをC言語風に
 vim.opt.autoindent = true
 vim.opt.smartindent = true
